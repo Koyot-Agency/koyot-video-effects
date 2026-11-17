@@ -304,9 +304,9 @@ def fx_backdrop_word(c, e):
     word = e.o.get('text', 'CLAUDE')
     im = cached(e, 'w', lambda: fit_text(word, c.W * 0.94, e.o.get('font', 'bold'), fill=rgb(e.o.get('color'), CREAM), shadow=10))
     k = ease_back(c.lt / 0.42)
-    y_end = c.fy - c.fw * 1.05
+    y_end = c.fy - c.fw * float(e.o.get('lift', 1.05))
     y = -im.height + (y_end + im.height) * k
-    place(c, im, c.W / 2 * 0.6 + c.fx * 0.4, y, alpha=clamp((e.d - c.lt) / 0.2), behind=True)
+    place(c, im, c.W * float(e.o['x']) if e.o.get('x') else c.W / 2 * 0.6 + c.fx * 0.4, y, alpha=clamp((e.d - c.lt) / 0.2), behind=True)
 
 
 _grid = {}
@@ -1423,7 +1423,7 @@ def comment_sheet(c, e):
     d.line([(0, 80 * u), (sw, 80 * u)], fill=(60, 60, 64, 255), width=max(1, int(2 * u)))
     def avatar(sz):
         a = Image.new('RGBA', (int(sz), int(sz)), (0, 0, 0, 0)); ad = ImageDraw.Draw(a)
-        ad.ellipse([0, 0, sz - 1, sz - 1], fill=(233, 90, 140, 255)); ad.text((sz / 2, sz / 2), 'V', font=font('uib', sz * 0.5), fill=(255, 255, 255, 255), anchor='mm')
+        ad.ellipse([0, 0, sz - 1, sz - 1], fill=(233, 90, 140, 255)); ad.text((sz / 2, sz / 2), e.o.get('initial', 'V'), font=font('uib', sz * 0.5), fill=(255, 255, 255, 255), anchor='mm')
         return a
     if c.lt < t_post:
         d.text((sw / 2, 190 * u), 'Start the conversation.', font=font('uim', 21 * u), fill=grey, anchor='mm')
@@ -1651,8 +1651,9 @@ def fx_apple_toggles(c, e):
     if e.o.get('pos', 'above') == 'below':
         place(c, im, c.W / 2, min(c.H - ch * 0.75, c.fy + c.fw * 2.5), 0.6 + 0.4 * q, 0, al, guard=True); return
     # above you, tucked behind your head: your hair overlaps only the bottom edge
-    cy = max(c.H * 0.08 + ch / 2, c.fy - c.fw * 0.95 + c.fw * float(e.o.get('overlap', 0.08)) - ch / 2)
-    place(c, im, c.W / 2, cy + (1 - q) * c.W * 0.04, 0.6 + 0.4 * q, 0, al, behind=True)
+    sz = float(e.o.get('size', 1)); che = ch * sz
+    cy = max(c.H * 0.08 + che / 2, c.fy - c.fw * 0.95 + c.fw * float(e.o.get('overlap', 0.08)) - che / 2)
+    place(c, im, c.W / 2, cy + (1 - q) * c.W * 0.04, (0.6 + 0.4 * q) * sz, 0, al, behind=True)
 
 
 @effect('led-sign', 'the lights drop and a glowing LED sign types itself out behind you')
